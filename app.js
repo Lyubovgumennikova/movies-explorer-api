@@ -11,10 +11,11 @@ const errorHandler = require('./middlewares/errorHandler');
 const validations = require('./middlewares/validations');
 const NotFound = require('./errors/NotFound');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
+const { MONGODATA } = require('./config');
 // Слушаем 3000 порт
-const { PORT = 3000 } = process.env;
+const { PORT = 3000, MONGODB = MONGODATA } = process.env;
 
-mongoose.connect('mongodb://localhost:27017/bitfilmsdb', {
+mongoose.connect(MONGODB, {
   useNewUrlParser: true,
 });
 
