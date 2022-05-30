@@ -17,6 +17,9 @@ const { PORT = 3000, MONGODB = MONGODATA } = process.env;
 
 mongoose.connect(MONGODB, {
   useNewUrlParser: true,
+  // useCreateIndex: true,
+  // useFindAndModify: false,
+  // useUnifiedTopology: true,
 });
 
 app.use(cors());
