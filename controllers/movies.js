@@ -40,14 +40,13 @@ module.exports.getMovies = (req, res, next) => {
 };
 
 module.exports.deleteMovies = (req, res, next) => {
-  Movie.findById(req.params.id)
-    .orFail(new NotFound('Запрашиваемый фильм не найдена'))
+  Movie.findById(req.params.movieId)
+    .orFail(new NotFound('Запрашиваемый фильм не найден'))
     .then((movie) => {
       if (!movie.owner.equals(req.user._id)) {
         throw new Forbidden('Нет прав доступа');
       } else {
-        return Movie.findByIdAndRemove(movie)
-          .then(() => res.send({ data: movie }));
+        movie.remove().then(() => res.send({ message: movie }));
       }
     })
     .catch((err) => {

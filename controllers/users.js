@@ -5,7 +5,6 @@ const ErrorConflict = require('../errors/ErrorConflict');
 const ValidationError = require('../errors/ValidationError');
 const Unauthorized = require('../errors/Unauthorized');
 const NotFound = require('../errors/NotFound');
-const Forbidden = require('../errors/Forbidden');
 
 const { SALT_ROUNDS, JWT_SECRET } = require('../config');
 
@@ -14,20 +13,23 @@ module.exports.createUser = (req, res, next) => {
     email, password, name,
   } = req.body;
 
-  User.findOne({ email })
+  bcrypt.hash(password, SALT_ROUNDS).then((hash) => User.create({
+    email, password: hash, name,
+  }))
     .then((user) => {
-      if (user) {
-        throw new ErrorConflict('Пользователь с таким email уже зарегистрирован');
-      }
-      return bcrypt.hash(password, SALT_ROUNDS);
+      const newUser = user.toObject();
+      delete newUser.password;
+      res.send(newUser);
     })
-    .then((hash) => User.create({
-      email,
-      password: hash,
-      name,
-    }))
-    .then((user) => User.findOne({ _id: user._id }))
-    .then((user) => res.send({ data: user }))
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        throw new ValidationError('Переданы некорректные данные');
+      }
+      if (err.code === 11000) {
+        throw new ErrorConflict('При регистрации указан email, который уже существует на сервере');
+      }
+      return next(err);
+    })
     .catch(next);
 };
 
@@ -60,13 +62,7 @@ module.exports.getUserMe = (req, res, next) => {
     .then((user) => {
       res.send({ data: user });
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new Forbidden('Невалидный id '));
-      } else {
-        next(err);
-      }
-    });
+    .catch(next);
 };
 
 module.exports.updateUser = (req, res, next) => {
