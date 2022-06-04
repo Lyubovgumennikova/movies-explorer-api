@@ -5,4 +5,4 @@
 
 https://github.com/Lyubovgumennikova/movies-explorer-api.git
 
-IP-адрес 51.250.99.128 www.api.filmsdiploma.nomoreparties.sbs
+IP-адрес 51.250.99.128 http://api.filmsdiploma.nomoreparties.sbs

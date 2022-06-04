@@ -85,8 +85,7 @@ module.exports.updateUser = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new ValidationError('некорректные данные'));
-      } else {
-        next(err);
       }
+      return next(err);
     });
 };

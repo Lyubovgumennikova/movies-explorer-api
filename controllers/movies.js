@@ -46,7 +46,7 @@ module.exports.deleteMovies = (req, res, next) => {
       if (!movie.owner.equals(req.user._id)) {
         throw new Forbidden('Нет прав доступа');
       } else {
-        movie.remove().then(() => res.send({ message: movie }));
+        return movie.remove().then(() => res.send({ message: movie }));
       }
     })
     .catch((err) => {
